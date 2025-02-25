@@ -3,6 +3,7 @@ import { IonReactRouter } from '@ionic/react-router';
 import { Redirect, Route } from 'react-router-dom';
 import Menu from './components/Menu';
 import Page from './pages/Page';
+import { appPages } from './utils/AppPages'; // Importation de appPages
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -36,6 +37,23 @@ import './theme/variables.css';
 
 setupIonicReact();
 
+import { RouteComponentProps } from 'react-router-dom';
+
+interface Page {
+  url: string;
+  subPages?: Page[];
+}
+
+const generateRoutes = (pages: Page[]): JSX.Element[] => {
+  return pages.map((page) => (
+    <Route path={page.url} exact={true} key={page.url}>
+      <Page />
+    </Route>
+  )).concat(
+    pages.filter(page => page.subPages).flatMap(page => generateRoutes(page.subPages || []))
+  );
+};
+
 const App: React.FC = () => {
   return (
     <IonApp>
@@ -44,11 +62,9 @@ const App: React.FC = () => {
           <Menu />
           <IonRouterOutlet id="main">
             <Route path="/" exact={true}>
-              <Redirect to="/folder/Inbox" />
+              <Redirect to="/Home" />
             </Route>
-            <Route path="/folder/:name" exact={true}>
-              <Page />
-            </Route>
+            {generateRoutes(appPages)}
           </IonRouterOutlet>
         </IonSplitPane>
       </IonReactRouter>
