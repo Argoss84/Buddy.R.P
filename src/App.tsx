@@ -1,9 +1,9 @@
 import { IonApp, IonRouterOutlet, IonSplitPane, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { Redirect, Route } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import Menu from './components/Menu';
-import Page from './pages/Page';
-import { appPages } from './utils/AppPages'; // Importation de appPages
+import { AppPage, appPages } from './utils/AppPages'; // Importation de appPages
+import E404 from './pages/E404'; // Importation de la page E404
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -44,11 +44,9 @@ interface Page {
   subPages?: Page[];
 }
 
-const generateRoutes = (pages: Page[]): JSX.Element[] => {
+const generateRoutes = (pages: AppPage[]): JSX.Element[] => {
   return pages.map((page) => (
-    <Route path={page.url} exact={true} key={page.url}>
-      <Page />
-    </Route>
+    <Route path={page.url} exact={true} key={page.url} component={page.component} />
   )).concat(
     pages.filter(page => page.subPages).flatMap(page => generateRoutes(page.subPages || []))
   );
@@ -61,10 +59,13 @@ const App: React.FC = () => {
         <IonSplitPane contentId="main">
           <Menu />
           <IonRouterOutlet id="main">
-            <Route path="/" exact={true}>
-              <Redirect to="/Home" />
-            </Route>
-            {generateRoutes(appPages)}
+            <Switch>
+              <Route path="/" exact>
+                <Redirect to="/Home" />
+              </Route>
+              {generateRoutes(appPages)}
+              <Route path="*" component={E404} />
+            </Switch>
           </IonRouterOutlet>
         </IonSplitPane>
       </IonReactRouter>

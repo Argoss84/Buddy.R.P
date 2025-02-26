@@ -12,7 +12,7 @@ import {
 } from '@ionic/react';
 
 import { useLocation } from 'react-router-dom';
-import { chevronDownOutline, chevronForwardOutline } from 'ionicons/icons';
+import { chevronDownOutline, chevronForwardOutline, homeOutline } from 'ionicons/icons';
 import './Menu.css';
 import { appPages, AppPage } from '../utils/AppPages';
 
@@ -34,7 +34,19 @@ const Menu: React.FC = () => {
         <IonList id="inbox-list">
           <IonListHeader>Buddy.R.P</IonListHeader>
           <IonNote>Bonjour {connectedUser ?? "ø"}</IonNote>
-          {appPages.map((appPage, index) => (
+          <IonMenuToggle autoHide={false}>
+            <IonItem
+              className={location.pathname === '/Home' ? 'selected' : ''}
+              routerLink="/Home"
+              routerDirection="none"
+              lines="none"
+              detail={false}
+            >
+              <IonIcon aria-hidden="true" slot="start" ios={homeOutline} md={homeOutline} />
+              <IonLabel>Home</IonLabel>
+            </IonItem>
+          </IonMenuToggle>
+          {appPages.filter(appPage => appPage.visible).map((appPage, index) => (
             <div key={index}>
               <IonItem
                 className={location.pathname === appPage.url ? 'selected' : ''}
@@ -54,7 +66,7 @@ const Menu: React.FC = () => {
                   />
                 )}
               </IonItem>
-              {appPage.subPages && openMenus[appPage.title] && appPage.subPages.map((subPage, subIndex) => (
+              {appPage.subPages && openMenus[appPage.title] && appPage.subPages.filter(subPage => subPage.visible).map((subPage, subIndex) => (
                 <IonMenuToggle key={subIndex} autoHide={false}>
                   <IonItem
                     className={location.pathname === subPage.url ? 'selected' : ''}
