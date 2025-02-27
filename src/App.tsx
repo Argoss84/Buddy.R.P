@@ -31,11 +31,12 @@ import '@ionic/react/css/display.css';
  */
 
 import '@ionic/react/css/palettes/dark.always.css'; 
-import '@ionic/react/css/palettes/dark.class.css'; 
-import '@ionic/react/css/palettes/dark.system.css';
+// import '@ionic/react/css/palettes/dark.class.css'; 
+// import '@ionic/react/css/palettes/dark.system.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import Home from './pages/Home';
 
 setupIonicReact();
 
@@ -48,7 +49,11 @@ const generateRoutes = (pages: AppPage[]): JSX.Element[] => {
 };
 
 const App: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return <div>Loading...</div>; // Vous pouvez remplacer cela par un indicateur de chargement personnalisé
+  }
 
   return (
     <IonApp>
@@ -62,6 +67,7 @@ const App: React.FC = () => {
                   <Redirect to="/Home" />
                 </Route>
                 {generateRoutes(appPages)}
+                <Route path="/Login" component={Home} />
                 <Route path="*" component={E404} />
               </Switch>
             </IonRouterOutlet>
