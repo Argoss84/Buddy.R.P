@@ -2,8 +2,10 @@ import { IonApp, IonRouterOutlet, IonSplitPane, setupIonicReact } from '@ionic/r
 import { IonReactRouter } from '@ionic/react-router';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import Menu from './components/Menu';
-import { AppPage, appPages } from './utils/AppPages'; // Importation de appPages
-import E404 from './pages/E404'; // Importation de la page E404
+import { AppPage, appPages } from './utils/AppPages';
+import E404 from './pages/E404';
+import Login from './pages/auth/Login';
+import { useAuth } from './context/AuthenticationContect';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -28,21 +30,14 @@ import '@ionic/react/css/display.css';
  * https://ionicframework.com/docs/theming/dark-mode
  */
 
-/* import '@ionic/react/css/palettes/dark.always.css'; */
-/* import '@ionic/react/css/palettes/dark.class.css'; */
+import '@ionic/react/css/palettes/dark.always.css'; 
+import '@ionic/react/css/palettes/dark.class.css'; 
 import '@ionic/react/css/palettes/dark.system.css';
 
 /* Theme variables */
 import './theme/variables.css';
 
 setupIonicReact();
-
-import { RouteComponentProps } from 'react-router-dom';
-
-interface Page {
-  url: string;
-  subPages?: Page[];
-}
 
 const generateRoutes = (pages: AppPage[]): JSX.Element[] => {
   return pages.map((page) => (
@@ -53,21 +48,34 @@ const generateRoutes = (pages: AppPage[]): JSX.Element[] => {
 };
 
 const App: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+
   return (
     <IonApp>
       <IonReactRouter>
-        <IonSplitPane contentId="main">
-          <Menu />
+        {isAuthenticated ? (
+          <IonSplitPane contentId="main">
+            <Menu />
+            <IonRouterOutlet id="main">
+              <Switch>
+                <Route path="/" exact>
+                  <Redirect to="/Home" />
+                </Route>
+                {generateRoutes(appPages)}
+                <Route path="*" component={E404} />
+              </Switch>
+            </IonRouterOutlet>
+          </IonSplitPane>
+        ) : (
           <IonRouterOutlet id="main">
             <Switch>
-              <Route path="/" exact>
-                <Redirect to="/Home" />
+              <Route path="/login" component={Login} />
+              <Route path="*">
+                <Redirect to="/login" />
               </Route>
-              {generateRoutes(appPages)}
-              <Route path="*" component={E404} />
             </Switch>
           </IonRouterOutlet>
-        </IonSplitPane>
+        )}
       </IonReactRouter>
     </IonApp>
   );

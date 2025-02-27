@@ -12,13 +12,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(() => {
-    const fetchSession = async () => {
-      const { data: session } = await supabase.auth.getSession();
-      setIsAuthenticated(!!session);
-    };
-    fetchSession();
-  }, []);
+//   useEffect(() => {
+//     const fetchSession = async () => {
+//       const { data: session } = await supabase.auth.getSession();
+//       setIsAuthenticated(!!session);
+//     };
+//     fetchSession();
+//   }, []);
 
   const login = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
