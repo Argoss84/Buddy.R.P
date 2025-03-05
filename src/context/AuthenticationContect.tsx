@@ -1,7 +1,9 @@
+// src/context/AuthenticationContect.tsx
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
+import { getUserWithAccessRights } from '../services/UserServices';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY || "";
@@ -12,38 +14,44 @@ interface AuthContextType {
   session: any;
   userEmail: string | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  accessRights: any;
   logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+export const supabaseClient = supabase;
+
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [session, setSession] = useState<any>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [accessRights, setAccessRights] = useState<any>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUserEmail(session?.user?.email || null);
       setLoading(false);
+
+      if (session?.user) {
+        const userRights = getUserWithAccessRights(session.user.id);
+        setAccessRights(userRights);
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUserEmail(session?.user?.email || null);
+
+      if (session?.user) {
+        const userRights = getUserWithAccessRights(session.user.id);
+        setAccessRights(userRights);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
-
-  const login = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      throw new Error(error.message);
-    }
-  };
 
   const logout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -70,7 +78,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   return (
-    <AuthContext.Provider value={{ session, userEmail, loading, login, logout }}>
+    <AuthContext.Provider value={{ session, userEmail, loading, accessRights, logout }}>
       {children}
     </AuthContext.Provider>
   );
