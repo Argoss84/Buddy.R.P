@@ -93,12 +93,10 @@ const Menu: React.FC = () => {
               ))}
             </div>
           ))}
-          <IonItem>
-            <IonButton  shape="round" expand="full" onClick={handleLogout}>
+        </IonList>
+        <IonButton  shape="round" expand="full" onClick={handleLogout}>
               Se déconnecter
             </IonButton>
-          </IonItem>
-        </IonList>
       </IonContent>
     </IonMenu>
   );
