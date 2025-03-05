@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  IonButton,
   IonContent,
   IonIcon,
   IonItem,
@@ -15,11 +16,12 @@ import { useLocation } from 'react-router-dom';
 import { chevronDownOutline, chevronForwardOutline, homeOutline } from 'ionicons/icons';
 import './Menu.css';
 import { appPages, AppPage } from '../utils/AppPages';
+import { useAuth } from '../context/AuthenticationContect';
 
 const Menu: React.FC = () => {
   const location = useLocation();
-  const connectedUser = localStorage.getItem('connectedUser');
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
+  const { logout, userEmail } = useAuth();
 
   const toggleMenu = (title: string) => {
     setOpenMenus(prevState => ({
@@ -28,12 +30,20 @@ const Menu: React.FC = () => {
     }));
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Failed to logout:', error);
+    }
+  };
+  
   return (
     <IonMenu contentId="main" type="reveal">
       <IonContent>
         <IonList id="inbox-list">
           <IonListHeader>Buddy.R.P</IonListHeader>
-          <IonNote>Bonjour {connectedUser ?? "ø"}</IonNote>
+          <IonNote>Bonjour {userEmail}</IonNote>
           <IonMenuToggle autoHide={false}>
             <IonItem
               className={location.pathname === '/Home' ? 'selected' : ''}
@@ -83,6 +93,11 @@ const Menu: React.FC = () => {
               ))}
             </div>
           ))}
+          <IonItem>
+            <IonButton  shape="round" expand="full" onClick={handleLogout}>
+              Se déconnecter
+            </IonButton>
+          </IonItem>
         </IonList>
       </IonContent>
     </IonMenu>
