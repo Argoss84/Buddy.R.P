@@ -1,10 +1,10 @@
+// src/App.tsx
 import { IonApp, IonRouterOutlet, IonSplitPane, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import Menu from './components/Menu';
 import { AppPage, appPages } from './utils/AppPages';
 import E404 from './pages/E404';
-import Login from './pages/auth/Login';
 import { useAuth } from './context/AuthenticationContect';
 
 /* Core CSS required for Ionic components to work properly */
@@ -49,7 +49,7 @@ const generateRoutes = (pages: AppPage[]): JSX.Element[] => {
 };
 
 const App: React.FC = () => {
-  const { isAuthenticated, loading } = useAuth();
+  const { session, loading } = useAuth();
 
   if (loading) {
     return <div>Loading...</div>; // Vous pouvez remplacer cela par un indicateur de chargement personnalisé
@@ -58,7 +58,7 @@ const App: React.FC = () => {
   return (
     <IonApp>
       <IonReactRouter>
-        {isAuthenticated ? (
+        {session ? (
           <IonSplitPane contentId="main">
             <Menu />
             <IonRouterOutlet id="main">
@@ -67,7 +67,6 @@ const App: React.FC = () => {
                   <Redirect to="/Home" />
                 </Route>
                 {generateRoutes(appPages)}
-                <Route path="/Login" component={Home} />
                 <Route path="*" component={E404} />
               </Switch>
             </IonRouterOutlet>
@@ -75,9 +74,8 @@ const App: React.FC = () => {
         ) : (
           <IonRouterOutlet id="main">
             <Switch>
-              <Route path="/login" component={Login} />
               <Route path="*">
-                <Redirect to="/login" />
+                <Redirect to="/" />
               </Route>
             </Switch>
           </IonRouterOutlet>
