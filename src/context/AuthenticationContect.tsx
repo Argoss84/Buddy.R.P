@@ -59,7 +59,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   if (!session) {
-    return <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />;
+    return <Auth supabaseClient={supabase}
+      appearance={{
+        theme: ThemeSupa,
+        style: {
+          input: { background: 'grey', color: 'white' },
+          button: { background: 'grey', color: 'white'}
+        },
+      }} />;
   }
 
   return (
