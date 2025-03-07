@@ -18,10 +18,10 @@ import './Menu.css';
 import { appPages, AppPage } from '../utils/AppPages';
 import { useAuth } from '../context/AuthenticationContect';
 
-const Menu: React.FC = () => {
+export const Menu: React.FC = () => {
   const location = useLocation();
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
-  const { logout, userEmail } = useAuth();
+  const { logout, userEmail, userInfo } = useAuth();
 
   const toggleMenu = (title: string) => {
     setOpenMenus(prevState => ({
@@ -37,7 +37,10 @@ const Menu: React.FC = () => {
       console.error('Failed to logout:', error);
     }
   };
-  
+
+  // Extraire les noms des droits d'accès de l'utilisateur
+  const userAccessRights = userInfo && userInfo[0] ? userInfo[0].user_access_rights.map((uar: { access_rights: { name: any; }; }) => uar.access_rights.name) : [];
+
   return (
     <IonMenu contentId="main" type="reveal">
       <IonContent>
@@ -56,7 +59,7 @@ const Menu: React.FC = () => {
               <IonLabel>Home</IonLabel>
             </IonItem>
           </IonMenuToggle>
-          {appPages.filter(appPage => appPage.visible).map((appPage, index) => (
+          {appPages.filter(appPage => appPage.visible && (!appPage.requiredAccessRight || userAccessRights.includes(appPage.requiredAccessRight))).map((appPage, index) => (
             <div key={index}>
               <IonItem
                 className={location.pathname === appPage.url ? 'selected' : ''}
@@ -76,7 +79,7 @@ const Menu: React.FC = () => {
                   />
                 )}
               </IonItem>
-              {appPage.subPages && openMenus[appPage.title] && appPage.subPages.filter(subPage => subPage.visible).map((subPage, subIndex) => (
+              {appPage.subPages && openMenus[appPage.title] && appPage.subPages.filter(subPage => subPage.visible && (!subPage.requiredAccessRight || userAccessRights.includes(subPage.requiredAccessRight))).map((subPage, subIndex) => (
                 <IonMenuToggle key={subIndex} autoHide={false}>
                   <IonItem
                     className={location.pathname === subPage.url ? 'selected' : ''}
@@ -94,12 +97,10 @@ const Menu: React.FC = () => {
             </div>
           ))}
         </IonList>
-        <IonButton  shape="round" expand="full" onClick={handleLogout}>
-              Se déconnecter
-            </IonButton>
+        <IonButton shape="round" expand="full" onClick={handleLogout}>
+          Se déconnecter
+        </IonButton>
       </IonContent>
     </IonMenu>
   );
 };
-
-export default Menu;

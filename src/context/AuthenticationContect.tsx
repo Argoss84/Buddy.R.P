@@ -14,7 +14,7 @@ interface AuthContextType {
   session: any;
   userEmail: string | null;
   loading: boolean;
-  accessRights: any;
+  userInfo: any;
   logout: () => Promise<void>;
 }
 
@@ -26,17 +26,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [session, setSession] = useState<any>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [accessRights, setAccessRights] = useState<any>(null);
+  const [userInfo, setUserInfo] = useState<any>(null);
 
   useEffect(() => {
+    const fetchUserInfo = async (userId: string) => {
+      const userInfo = await getUserWithAccessRights(userId);
+      setUserInfo(userInfo);
+    };
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUserEmail(session?.user?.email || null);
       setLoading(false);
 
       if (session?.user) {
-        const userRights = getUserWithAccessRights(session.user.id);
-        setAccessRights(userRights);
+        fetchUserInfo(session.user.id);
       }
     });
 
@@ -45,8 +49,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUserEmail(session?.user?.email || null);
 
       if (session?.user) {
-        const userRights = getUserWithAccessRights(session.user.id);
-        setAccessRights(userRights);
+        fetchUserInfo(session.user.id);
       }
     });
 
@@ -78,7 +81,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   return (
-    <AuthContext.Provider value={{ session, userEmail, loading, accessRights, logout }}>
+    <AuthContext.Provider value={{ session, userEmail, loading, userInfo, logout }}>
       {children}
     </AuthContext.Provider>
   );

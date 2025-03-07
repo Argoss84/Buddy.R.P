@@ -10,6 +10,7 @@ export interface AppPage {
   title: string;
   component: React.FC;
   visible: boolean;
+  requiredAccessRight?: string; // Ajout du champ requiredAccessRight
   subPages?: AppPage[];
 }
 
@@ -36,7 +37,8 @@ export const appPages: AppPage[] = [
         iosIcon: mailOutline,
         mdIcon: mailSharp,
         component: Budget,
-        visible: true
+        visible: true,
+        requiredAccessRight: 'House_Budget'
       },
       {
         title: 'Entretien & Travaux',
@@ -44,7 +46,8 @@ export const appPages: AppPage[] = [
         iosIcon: bookmarkOutline,
         mdIcon: bookmarkOutline,
         component: Default,
-        visible: true
+        visible: true,
+        requiredAccessRight: 'House'
       },
       {
         title: 'Gestion des Équipements',

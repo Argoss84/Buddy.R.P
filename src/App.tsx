@@ -2,7 +2,7 @@
 import { IonApp, IonRouterOutlet, IonSplitPane, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import Menu from './components/Menu';
+import { Menu } from './components/Menu';
 import { AppPage, appPages } from './utils/AppPages';
 import E404 from './pages/E404';
 import { useAuth } from './context/AuthenticationContect';
@@ -36,20 +36,26 @@ import '@ionic/react/css/palettes/dark.always.css';
 
 setupIonicReact();
 
-const generateRoutes = (pages: AppPage[]): JSX.Element[] => {
-  return pages.map((page) => (
-    <Route path={page.url} exact={true} key={page.url} component={page.component} />
-  )).concat(
-    pages.filter(page => page.subPages).flatMap(page => generateRoutes(page.subPages || []))
+const generateRoutes = (pages: AppPage[], accessRights: string[]): JSX.Element[] => {
+  return pages.map((page) => {
+    if (page.requiredAccessRight && (!accessRights || !accessRights.includes(page.requiredAccessRight))) {
+      return <Route key={page.url} path={page.url} render={() => <Redirect to="/Home" />} />;
+    }
+    return <Route key={page.url} path={page.url} exact component={page.component} />;
+  }).concat(
+    pages.filter(page => page.subPages).flatMap(page => generateRoutes(page.subPages || [], accessRights))
   );
 };
 
 const App: React.FC = () => {
-  const { session, loading } = useAuth();
+  const { session, loading, userInfo } = useAuth();
 
   if (loading) {
     return <div>Loading...</div>; // Vous pouvez remplacer cela par un indicateur de chargement personnalisé
   }
+
+  // Extraire les noms des droits d'accès de l'utilisateur
+  const userAccessRights = userInfo && userInfo[0] ? userInfo[0].user_access_rights.map((uar: { access_rights: { name: any; }; }) => uar.access_rights.name) : [];
 
   return (
     <IonApp>
@@ -62,7 +68,7 @@ const App: React.FC = () => {
                 <Route path="/" exact>
                   <Redirect to="/Home" />
                 </Route>
-                {generateRoutes(appPages)}
+                {userAccessRights.length > 0 ? generateRoutes(appPages, userAccessRights) : null}
                 <Route path="*" component={E404} />
               </Switch>
             </IonRouterOutlet>
