@@ -6,11 +6,11 @@ const Home: React.FC = () => {
   const { showToast } = useToast();
 
   const handleClick = () => {
-    showToast('Hello, this is a toast message!');
+    showToast('🦄 Hello, this is a toast message!');
   };
 
   const handleClickWithOptions = () => {
-    showToast('Hello, this is a custom toast message!', {
+    showToast('🦄 Hello, this is a custom toast message!', {
       position: "bottom-left",
       autoClose: 3000,
     });
