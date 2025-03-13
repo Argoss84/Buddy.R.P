@@ -2,6 +2,7 @@ import { archiveOutline, archiveSharp, barbell, barbellOutline, barbellSharp, bo
 import Home from '../pages/Home';
 import Budget from '../pages/Budget';
 import Default from '../pages/Default';
+import UserPreferences from '../pages/UserPreferences';
 
 export interface AppPage {
   url: string;
@@ -249,7 +250,7 @@ export const appPages: AppPage[] = [
         url: '/Settings/Preferences',
         iosIcon: colorWandOutline,
         mdIcon: colorWandSharp,
-        component: Default,
+        component: UserPreferences,
         visible: true
       },
       {

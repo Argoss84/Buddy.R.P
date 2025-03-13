@@ -22,3 +22,36 @@ export async function getUserWithAccessRights(authUserId: any) {
 
     return data;
 }
+// Create a new user
+export const createUser = async (userData: any) => {
+  const { data, error } = await supabaseClient
+    .from('users')
+    .insert([userData]);
+  return { data, error };
+};
+
+// Read users
+export const getUsers = async () => {
+  const { data, error } = await supabaseClient
+    .from('users')
+    .select('*');
+  return { data, error };
+};
+
+// Update a user
+export const updateUser = async (id: any, userData: any) => {
+  const { data, error } = await supabaseClient
+    .from('users')
+    .update(userData)
+    .eq('id', id);
+  return { data, error };
+};
+
+// Delete a user
+export const deleteUser = async (id: any) => {
+  const { data, error } = await supabaseClient
+    .from('users')
+    .delete()
+    .eq('id', id);
+  return { data, error };
+};
