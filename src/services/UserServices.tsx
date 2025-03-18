@@ -40,9 +40,12 @@ export const getUsers = async () => {
 
 // Update a user
 export const updateUser = async (id: any, userData: any) => {
+  const userWithoutId = { ...userData };
+  delete userWithoutId.id;
+
   const { data, error } = await supabaseClient
     .from('users')
-    .update(userData)
+    .update(userWithoutId)
     .eq('id', id);
   return { data, error };
 };
