@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonInput, IonItemDivider, IonGrid, IonRow, IonCol, IonButtons, IonMenuButton } from '@ionic/react';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonInput, IonItemDivider, IonGrid, IonRow, IonCol, IonButtons, IonMenuButton, IonButton } from '@ionic/react';
 import { getUsers, updateUser } from '../services/UserServices';
 
 const UserPreferences: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
+  const [editedUsers, setEditedUsers] = useState<any>({});
 
   useEffect(() => {
     fetchUsers();
@@ -20,15 +21,34 @@ const UserPreferences: React.FC = () => {
     }
   };
 
-  const handleUpdateUser = async (id: any, updatedUser: any) => {
-    const { data, error } = await updateUser(id, updatedUser);
-    if (error) {
-      console.error('Erreur lors de la mise à jour de l\'utilisateur :', error);
-    } else {
-      if (data) {
-        setUsers(users.map(user => (user.id === id ? data[0] : user)));
+  const handleInputChange = (id: any, field: string, value: any) => {
+    setEditedUsers({
+      ...editedUsers,
+      [id]: {
+        ...editedUsers[id],
+        [field]: value
+      }
+    });
+  };
+
+  const handleSaveChanges = async () => {
+    const updatedUsers = [...users];
+    for (const id in editedUsers) {
+      const updatedUser = editedUsers[id];
+      const { data, error } = await updateUser(id, updatedUser);
+      if (error) {
+        console.error('Erreur lors de la mise à jour de l\'utilisateur :', error);
+      } else {
+        if (data) {
+          const index = updatedUsers.findIndex(user => user.id === id);
+          if (index !== -1) {
+            updatedUsers[index] = data[0];
+          }
+        }
       }
     }
+    setUsers(updatedUsers);
+    setEditedUsers({});
   };
 
   return (
@@ -49,7 +69,7 @@ const UserPreferences: React.FC = () => {
           </IonToolbar>
         </IonHeader>
         <IonList>
-          <IonItemDivider>Liste des utilisateurs</IonItemDivider>
+          <IonItemDivider>Utilisateur</IonItemDivider>
           {users.map(user => (
             <IonItem key={user.id}>
               <IonGrid>
@@ -57,15 +77,15 @@ const UserPreferences: React.FC = () => {
                   <IonCol size="12" size-md="6">
                     <IonInput
                       label='Prénom'
-                      value={user.first_name}
-                      onIonChange={(e) => handleUpdateUser(user.id, { ...user, first_name: e.detail.value! })}
+                      value={editedUsers[user.id]?.first_name || user.first_name}
+                      onIonChange={(e) => handleInputChange(user.id, 'first_name', e.detail.value!)}
                     />
                   </IonCol>
                   <IonCol size="12" size-md="6">
                     <IonInput
                       label='Nom'
-                      value={user.last_name}
-                      onIonChange={(e) => handleUpdateUser(user.id, { ...user, last_name: e.detail.value! })}
+                      value={editedUsers[user.id]?.last_name || user.last_name}
+                      onIonChange={(e) => handleInputChange(user.id, 'last_name', e.detail.value!)}
                     />
                   </IonCol>
                 </IonRow>
@@ -73,15 +93,15 @@ const UserPreferences: React.FC = () => {
                   <IonCol size="12" size-md="6">
                     <IonInput
                       label='Téléphone'
-                      value={user.phone}
-                      onIonChange={(e) => handleUpdateUser(user.id, { ...user, phone: e.detail.value! })}
+                      value={editedUsers[user.id]?.phone || user.phone}
+                      onIonChange={(e) => handleInputChange(user.id, 'phone', e.detail.value!)}
                     />
                   </IonCol>
                   <IonCol size="12" size-md="6">
                     <IonInput
                       label='Photo de profil'
-                      value={user.profile_picture}
-                      onIonChange={(e) => handleUpdateUser(user.id, { ...user, profile_picture: e.detail.value! })}
+                      value={editedUsers[user.id]?.profile_picture || user.profile_picture}
+                      onIonChange={(e) => handleInputChange(user.id, 'profile_picture', e.detail.value!)}
                     />
                   </IonCol>
                 </IonRow>
@@ -89,8 +109,8 @@ const UserPreferences: React.FC = () => {
                   <IonCol size="12">
                     <IonInput
                       label='Bio'
-                      value={user.bio}
-                      onIonChange={(e) => handleUpdateUser(user.id, { ...user, bio: e.detail.value! })}
+                      value={editedUsers[user.id]?.bio || user.bio}
+                      onIonChange={(e) => handleInputChange(user.id, 'bio', e.detail.value!)}
                     />
                   </IonCol>
                 </IonRow>
@@ -98,6 +118,7 @@ const UserPreferences: React.FC = () => {
             </IonItem>
           ))}
         </IonList>
+        <IonButton expand="full" onClick={handleSaveChanges}>Enregistrer</IonButton>
       </IonContent>
     </IonPage>
   );
