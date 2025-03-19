@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonInput, IonItemDivider, IonGrid, IonRow, IonCol, IonButtons, IonMenuButton, IonButton } from '@ionic/react';
 import { getUsers, updateUser } from '../services/UserServices';
 import { useToast } from '../context/ToastContext';
+import { insertLog } from '../services/AdminService'; // Importer la méthode insertLog
 
 const UserPreferences: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
@@ -45,6 +46,9 @@ const UserPreferences: React.FC = () => {
         showToast('Erreur lors de la mise à jour de l\'utilisateur');
       } else {
         showToast('Utilisateur mis à jour avec succès');
+        // Insérer un log après une mise à jour réussie
+        await insertLog('info',`Utilisateur ${id} mis à jour avec succès`,
+          { updatedUser },'UserPreferences',Number(id));
       }
     }
   };
