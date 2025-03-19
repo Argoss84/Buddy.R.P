@@ -5,6 +5,7 @@ import { useToast } from '../context/ToastContext';
 const Home: React.FC = () => {
   const { showToast } = useToast();
 
+  const pageTitle = location.pathname.substring(1) || 'Page';
   const handleClick = () => {
     showToast('🦄 Hello, this is a toast message!');
   };
@@ -23,18 +24,18 @@ const Home: React.FC = () => {
           <IonButtons slot="start">
             <IonMenuButton />
           </IonButtons>
-          <IonTitle>Home</IonTitle>
+          <IonTitle>{pageTitle}</IonTitle>
         </IonToolbar>
       </IonHeader>
 
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">Home</IonTitle>
+            <IonTitle size="large">{pageTitle}</IonTitle>
           </IonToolbar>
         </IonHeader>
         <div className="ion-padding">
-          <h1>Home</h1>
+          <h1>{pageTitle}</h1>
           <IonButton onClick={handleClick}>Show Toast</IonButton>
           <IonButton onClick={handleClickWithOptions}>Show Custom Toast</IonButton>
         </div>

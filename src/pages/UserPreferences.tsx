@@ -7,6 +7,7 @@ const UserPreferences: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [editedUsers, setEditedUsers] = useState<any>({});
   const { showToast } = useToast();
+  const pageTitle = location.pathname.substring(1) || 'Page';
   
   useEffect(() => {
     fetchUsers();
@@ -16,6 +17,7 @@ const UserPreferences: React.FC = () => {
     const { data, error } = await getUsers();
     if (error) {
       console.error('Erreur lors de la récupération des utilisateurs :', error);
+      showToast('Erreur lors de la récupération des utilisateurs');
     } else {
       if (data) {
         setUsers(data);
@@ -40,6 +42,7 @@ const UserPreferences: React.FC = () => {
       const { data, error } = await updateUser(id, updatedUser);
       if (error) {
         console.error('Erreur lors de la mise à jour de l\'utilisateur :', error);
+        showToast('Erreur lors de la mise à jour de l\'utilisateur');
       } else {
         showToast('Utilisateur mis à jour avec succès');
       }
@@ -53,14 +56,14 @@ const UserPreferences: React.FC = () => {
           <IonButtons slot="start">
             <IonMenuButton />
           </IonButtons>
-          <IonTitle>Informations Utilisateur</IonTitle>
+          <IonTitle>{pageTitle}</IonTitle>
         </IonToolbar>
       </IonHeader>
 
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">Informations Utilisateur</IonTitle>
+            <IonTitle size="large">{pageTitle}</IonTitle>
           </IonToolbar>
         </IonHeader>
         <IonList>
