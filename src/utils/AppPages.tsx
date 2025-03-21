@@ -3,6 +3,7 @@ import Home from '../pages/Home';
 import Budget from '../pages/Budget';
 import Default from '../pages/Default';
 import UserPreferences from '../pages/UserPreferences';
+import AppParameters from '../pages/AppParameters';
 
 export interface AppPage {
   url: string;
@@ -267,6 +268,24 @@ export const appPages: AppPage[] = [
         iosIcon: syncOutline,
         mdIcon: syncSharp,
         component: Default,
+        visible: true
+      }
+    ]
+  },
+  {
+    title: 'Administration',
+    url: '/Admin',
+    iosIcon: settingsOutline,
+    mdIcon: settingsSharp,
+    component: Default,
+    visible: true,
+    subPages: [
+      {
+        title: 'Paramètres de l\'application',
+        url: '/Admin/Parameters',
+        iosIcon: colorWandOutline,
+        mdIcon: colorWandSharp,
+        component: AppParameters,
         visible: true
       }
     ]
