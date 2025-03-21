@@ -3,15 +3,15 @@ import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem,
 import { listParameters, updateParameters } from '../services/AdminService';
 import { useToast } from '../context/ToastContext';
 import { insertLog } from '../services/AdminService';
-import { AuthContext } from '../context/AuthenticationContect'; // Importez le contexte d'authentification
+import { AuthContext } from '../context/AuthenticationContect';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 const AppParameters: React.FC = () => {
   const [parameters, setParameters] = useState<any[]>([]);
   const [editedParameters, setEditedParameters] = useState<any>({});
-  const [loading, setLoading] = useState<boolean>(true); // Ajoutez l'état de chargement
-  const { showToast } = useToast();
-  const authContext = useContext(AuthContext); // Utilisez le contexte d'authentification
+  const [loading, setLoading] = useState<boolean>(true);
+  const { showToast, showErrorToast } = useToast();
+  const authContext = useContext(AuthContext);
   const user = authContext ? authContext.userInfo : null;
   const pageTitle = location.pathname.substring(1) || 'Page';
 
@@ -25,7 +25,7 @@ const AppParameters: React.FC = () => {
       setParameters(data);
     } catch (error) {
       console.error('Erreur lors de la récupération des paramètres :', error);
-      showToast('Erreur lors de la récupération des paramètres');
+      showErrorToast('Erreur lors de la récupération des paramètres');
     } finally {
       setLoading(false); // Arrêtez le chargement une fois les paramètres récupérés
     }
@@ -50,7 +50,12 @@ const AppParameters: React.FC = () => {
       await insertLog('info', 'Paramètres mis à jour avec succès', { updatedParameters }, 'AppParameters', user[0].id);
     } catch (error) {
       console.error('Erreur lors de la mise à jour des paramètres :', error);
-      showToast('Erreur lors de la mise à jour des paramètres');
+      showErrorToast('Erreur lors de la mise à jour des paramètres');
+    }
+    finally {
+      if (authContext) {
+        await authContext.reloadParameters();
+      }
     }
   };
 
@@ -73,12 +78,12 @@ const AppParameters: React.FC = () => {
         </IonHeader>
         {loading ? (
           <DotLottieReact
-          src="src\lotties\UnicornRainbow.json"
-          loop
-          autoplay
-          width={50}
-          height={50}
-        />
+            src="src\lotties\UnicornRainbow.json"
+            loop
+            autoplay
+            width={50}
+            height={50}
+          />
         ) : (
           <IonList>
             <IonItemDivider>Paramètres de l'application</IonItemDivider>
