@@ -38,6 +38,16 @@ export const getUsers = async () => {
   return { data, error };
 };
 
+// Get user by ID
+export const getUserById = async (id: any) => {
+  const { data, error } = await supabaseClient
+    .from('users')
+    .select('*')
+    .eq('id', id)
+    .single();
+  return { data, error };
+};
+
 // Update a user
 export const updateUser = async (id: any, userData: any) => {
   const userWithoutId = { ...userData };

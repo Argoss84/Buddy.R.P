@@ -36,8 +36,32 @@ const Home: React.FC = () => {
         </IonHeader>
         <div className="ion-padding">
           <h1>{pageTitle}</h1>
-          <IonButton onClick={handleClick}>Show Toast</IonButton>
-          <IonButton onClick={handleClickWithOptions}>Show Custom Toast</IonButton>
+          <IonButton 
+            onClick={handleClick}
+            color="secondary"
+            shape="round"
+            style={{
+              '--background': 'linear-gradient(45deg, #FF69B4, #9370DB)',
+              '--border-radius': '20px',
+              '--box-shadow': '0 4px 15px rgba(147, 112, 219, 0.4)',
+              margin: '8px'
+            }}
+          >
+            🦄 Show Magical Toast
+          </IonButton>
+          <IonButton
+            onClick={handleClickWithOptions}
+            color="tertiary" 
+            shape="round"
+            style={{
+              '--background': 'linear-gradient(45deg, #FF1493, #4B0082)',
+              '--border-radius': '20px', 
+              '--box-shadow': '0 4px 15px rgba(255, 20, 147, 0.4)',
+              margin: '8px'
+            }}
+          >
+            ✨ Show Rainbow Toast
+          </IonButton>
         </div>
       </IonContent>
     </IonPage>
