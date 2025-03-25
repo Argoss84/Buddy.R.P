@@ -6,6 +6,7 @@ import { Menu } from './components/Menu';
 import { AppPage, appPages } from './utils/AppPages';
 import E404 from './pages/E404';
 import { useAuth } from './context/AuthenticationContect';
+import { NotificationProvider } from './context/NotificationContext';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -58,32 +59,34 @@ const App: React.FC = () => {
   const userAccessRights = userInfo && userInfo[0] ? userInfo[0].user_access_rights.map((uar: { access_rights: { name: any; }; }) => uar.access_rights.name) : [];
 
   return (
-    <IonApp>
-      <IonReactRouter>
-        {session ? (
-          <IonSplitPane contentId="main">
-            <Menu />
+    <NotificationProvider>
+      <IonApp>
+        <IonReactRouter>
+          {session ? (
+            <IonSplitPane contentId="main">
+              <Menu />
+              <IonRouterOutlet id="main">
+                <Switch>
+                  <Route path="/" exact>
+                    <Redirect to="/Home" />
+                  </Route>
+                  {userAccessRights.length > 0 ? generateRoutes(appPages, userAccessRights) : null}
+                  <Route path="*" component={E404} />
+                </Switch>
+              </IonRouterOutlet>
+            </IonSplitPane>
+          ) : (
             <IonRouterOutlet id="main">
               <Switch>
-                <Route path="/" exact>
-                  <Redirect to="/Home" />
+                <Route path="*">
+                  <Redirect to="/" />
                 </Route>
-                {userAccessRights.length > 0 ? generateRoutes(appPages, userAccessRights) : null}
-                <Route path="*" component={E404} />
               </Switch>
             </IonRouterOutlet>
-          </IonSplitPane>
-        ) : (
-          <IonRouterOutlet id="main">
-            <Switch>
-              <Route path="*">
-                <Redirect to="/" />
-              </Route>
-            </Switch>
-          </IonRouterOutlet>
-        )}
-      </IonReactRouter>
-    </IonApp>
+          )}
+        </IonReactRouter>
+      </IonApp>
+    </NotificationProvider>
   );
 };
 
