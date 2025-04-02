@@ -1,9 +1,12 @@
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonButton } from '@ionic/react';
 import './Page.css';
 import { useToast } from '../context/ToastContext';
+import { notifServices } from '../services/NotifServices';
+import { useAuth } from '../context/AuthenticationContect';
 
 const Home: React.FC = () => {
   const { showToast } = useToast();
+  const { userInfo: user } = useAuth();
 
   const pageTitle = location.pathname.substring(1) || 'Page';
   const handleClick = () => {
@@ -15,6 +18,20 @@ const Home: React.FC = () => {
       position: "bottom-left",
       autoClose: 3000,
     });
+  };
+
+  const handleAddNotification = async () => {
+    if (!user) {
+      showToast('Please login to add notifications');
+      return;
+    }
+
+    const notification = await notifServices.insertNotification(user[0].id, 'New notification from ' + user[0].email);
+    if (notification) {
+      showToast('Notification added successfully!');
+    } else {
+      showToast('Failed to add notification');
+    }
   };
 
   return (
@@ -61,6 +78,19 @@ const Home: React.FC = () => {
             }}
           >
             ✨ Show Rainbow Toast
+          </IonButton>
+          <IonButton
+            onClick={handleAddNotification}
+            color="primary"
+            shape="round"
+            style={{
+              '--background': 'linear-gradient(45deg, #4CAF50, #2196F3)',
+              '--border-radius': '20px',
+              '--box-shadow': '0 4px 15px rgba(33, 150, 243, 0.4)',
+              margin: '8px'
+            }}
+          >
+            🔔 Add Notification
           </IonButton>
         </div>
       </IonContent>
