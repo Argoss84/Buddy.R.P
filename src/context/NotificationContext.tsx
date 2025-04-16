@@ -24,6 +24,16 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         });
       });
 
+      // Subscribe to global notifications
+      notifServices.subscribeToGlobalNotifications((payload: any) => {
+        const notification = payload.new;
+        showToast(notification.content, {
+          position: "top-right",
+          autoClose: 1000,
+          type: "info"
+        });
+      });
+
       // Cleanup subscription on unmount
       return () => {
         notifServices.unsubscribe();

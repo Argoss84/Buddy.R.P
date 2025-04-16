@@ -34,6 +34,24 @@ const Home: React.FC = () => {
     }
   };
 
+  const handleAddGlobalNotification = async () => {
+    if (!user) {
+      showToast('Please login to add notifications');
+      return;
+    }
+
+    const notification = await notifServices.insertNotification(
+      null, 
+      '🔔 Global notification from ' + user[0].email,
+      'global'
+    );
+    if (notification) {
+      showToast('Global notification added successfully!');
+    } else {
+      showToast('Failed to add global notification');
+    }
+  };
+
   return (
     <IonPage>
       <IonHeader>
@@ -90,7 +108,20 @@ const Home: React.FC = () => {
               margin: '8px'
             }}
           >
-            🔔 Add Notification
+            🔔 Add User Notification
+          </IonButton>
+          <IonButton
+            onClick={handleAddGlobalNotification}
+            color="warning"
+            shape="round"
+            style={{
+              '--background': 'linear-gradient(45deg, #FF9800, #F44336)',
+              '--border-radius': '20px',
+              '--box-shadow': '0 4px 15px rgba(244, 67, 54, 0.4)',
+              margin: '8px'
+            }}
+          >
+            🌍 Add Global Notification
           </IonButton>
         </div>
       </IonContent>
