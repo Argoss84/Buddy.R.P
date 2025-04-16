@@ -4,6 +4,7 @@ import Budget from '../pages/Budget';
 import Default from '../pages/Default';
 import UserPreferences from '../pages/UserPreferences';
 import AppParameters from '../pages/AppParameters';
+import NotificationHistory from '../pages/NotificationHistory';
 
 export interface AppPage {
   url: string;
@@ -268,6 +269,14 @@ export const appPages: AppPage[] = [
         iosIcon: syncOutline,
         mdIcon: syncSharp,
         component: Default,
+        visible: true
+      },
+      {
+        title: 'Notifications',
+        url: '/Settings/Notifications',
+        iosIcon: mailOutline,
+        mdIcon: mailSharp,
+        component: NotificationHistory,
         visible: true
       }
     ]

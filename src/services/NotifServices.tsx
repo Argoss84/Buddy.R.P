@@ -84,6 +84,28 @@ class NotifServices {
       this.globalChannel.unsubscribe();
     }
   }
+
+  async getNotificationHistory(userId: number | null, type?: string): Promise<Notification[]> {
+    let query = supabaseClient
+      .from('notifications')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (type === 'user') {
+      query = query.eq('user_id', userId);
+    } else if (type === 'global') {
+      query = query.eq('type', 'global');
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error fetching notifications:', error);
+      return [];
+    }
+
+    return data || [];
+  }
 }
 
 export const notifServices = new NotifServices(); 
