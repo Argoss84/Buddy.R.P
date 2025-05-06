@@ -15,12 +15,22 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   useEffect(() => {
     if (user) {
-      // Subscribe to notifications when user is authenticated
+      // Subscribe to user-specific notifications
       notifServices.subscribeToNotifications(user[0].id, (payload: any) => {
         const notification = payload.new;
         showToast(notification.content, {
           position: "top-right",
-          autoClose: 5000,
+          autoClose: 1000,
+        });
+      });
+
+      // Subscribe to global notifications
+      notifServices.subscribeToGlobalNotifications((payload: any) => {
+        const notification = payload.new;
+        showToast(notification.content, {
+          position: "top-right",
+          autoClose: 1000,
+          type: "info"
         });
       });
 
